@@ -1,72 +1,93 @@
 #! /usr/bin/env node
 
-class School {
-   name: string;
+import inquirer from "inquirer";
+import chalk from "chalk";
 
-   students:any[]=[];
-   teachers:any[]=[];
+console.log(chalk.yellowBright.bold.underline('\t\n **************************WELCOME TO WARDAH SHAH STUDENT MANAGEMENT APP************************ \t\t'))
 
-   addStudent(stdObj:any){
-      this.students.push(stdObj)
-   }
-   addTeacher(tedObj:any){
-      this.teachers.push(tedObj)
-   }
+const randomNumber: number = Math.floor(10000 + Math.random() * 90000);
 
-   constructor(name:string){
-      this.name = name;
-   }
+let myBalance: number = 0;
+
+let answer = await inquirer.prompt([
+    {
+        name: "students",
+        type: "input",
+        message: chalk.magentaBright("Enter your name: "),
+        validate: function (value) {
+            if (value.trim() !== "") {
+                return true;
+            }
+            return chalk.redBright("Please enter a non-empty value.");
+        },
+    },
+    {
+        name: "courses",
+        type: "list",
+        message: chalk.blueBright.italic("Select the course to enroll in:"),
+        choices: ["HTML", "CSS", "JavaScript", "TypeScript", "Python"],
+    },
+]);
+
+const tutionFees: { [key: string]: number } = {
+    "HTML": 3000,
+    "CSS": 5000,
+    "JavaScript": 7000,
+    "TypeScript": 8000,
+    "Python": 8000,
+};
+
+console.log(chalk.cyanBright.bold(`\nTuition Fee for ${answer.courses}: ${tutionFees[answer.courses]}/-`));
+console.log(chalk.redBright(`Your current balance: ${myBalance}`));
+
+let paymentType = await inquirer.prompt([
+    {
+        name: "payment",
+        type: "list",
+        message: chalk.greenBright("Select a payment method:"),
+        choices: ["Bank Transfer", "Easypaisa", "Jazz Cash"],
+    },
+    {
+        name: "amount",
+        type: "input",
+        message: chalk.redBright("Enter the amount to pay:"),
+        validate: function (value) {
+            if (parseFloat(value) > 0) {
+                return true;
+            }
+            return chalk.yellowBright("Please enter a positive value.");
+        },
+    },
+]);
+
+console.log(chalk.magentaBright(`\nYou selected the payment method: ${paymentType.payment}\n`));
+
+const courseTutionFees = tutionFees[answer.courses];
+const paymentAmount = parseFloat(paymentType.amount);
+
+if (courseTutionFees === paymentAmount) {
+    console.log(chalk.grey(`\nCongratulations! You have successfully enrolled in the ${answer.courses} course.\n`));
+
+    let nextStep = await inquirer.prompt([
+        {
+            name: "select",
+            type: "list",
+            message: chalk.redBright("What would you like to do next?"),
+            choices: ["View Status", "Exit"],
+        },
+    ]);
+
+    if (nextStep.select === "View Status") {
+        console.log(chalk.magentaBright.bold.underline(`\n***Student Status***`));
+        console.log(chalk.yellowBright(`Student Name: ${answer.students}`));
+        console.log(chalk.yellowBright(`Student ID: ${randomNumber}`));
+        console.log(chalk.yellowBright(`Enrolled Course: ${answer.courses}`));
+        console.log(chalk.yellowBright(`Paid Tuition Fee: ${paymentAmount}`));
+        console.log(chalk.yellowBright(`Current Balance: ${myBalance += paymentAmount}`));
+    } else {
+        console.log(chalk.blueBright(`\n***Thank you for using our system!***\n`));
+    }
+
+} else {
+    console.log(chalk.yellowBright(`\nYou have not paid the full tuition fee for the ${answer.courses} course.\n`));
 }
-
-class Student {
-   name: string;
-   age: number;
-   schoolName: string;
-
-   constructor(name:string,age:number,schoolName:string){
-         this.name = name;
-         this.age = age;
-         this.schoolName = schoolName;
-   }
-}
-class Teacher1 {
-   name: string;
-   age: number;
-   schoolName: string;
-
-   constructor(name:string,age:number,schoolName:string){
-         this.name = name;
-         this.age = age;
-         this.schoolName = schoolName;
-   }
-}
-
-class Teacher extends Student {}
-
-let school1 = new School("Premier School")
-let school2 = new School("Happy Palace")
-let school3 = new School("Karachi Academy")
-
-// student
-let s1 = new Student("Sunny", 25,school1.name)
-let s2 = new Student("Ali", 10,school2.name)
-let s3 = new Student("Raza", 45,school3.name)
-// teacher
-let t1 = new Teacher("Asma", 33,school1.name)
-let t2 = new Teacher("Aslam", 30,school2.name)
-let t3 = new Teacher("Amir", 40,school3.name)
-
-// Students
-school1.addStudent(s1)
-school2.addStudent(s2)
-school3.addStudent(s3)
-
-// teachers
-school1.addTeacher(t1)
-school2.addTeacher(t2)
-school3.addTeacher(t3)
-
-
-console.log(school1);
-console.log(school2);
-console.log(school3);
